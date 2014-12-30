@@ -94,6 +94,8 @@ def parse(linux_src, out):
 		"/scripts/Makefile*",
 		"/scripts/basic/fixdep.c",
 	]
+	if out == "/usr/share/Kbuild":
+		files.append("/Makefile.app")
 	parse_files(linux_src, out, files)
 
 def main(argv):
@@ -102,7 +104,7 @@ def main(argv):
 		dir_in = "."
 		fixdep(dir_in, dir_out)
 	elif len(argv) == 1:
-		dir_out = "/usr/share/Kbuild"
+		dir_out = "."
 		dir_in = argv[0]
 	else:
 		dir_in = argv[0]
