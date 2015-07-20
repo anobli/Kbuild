@@ -43,7 +43,10 @@ export COMPILER
 KCONFIG_CONFIG	?= .config
 export KCONFIG_CONFIG
 
-KBUILD_CFLAGS := -Iinclude
+ifeq ($(KBUILD_CFLAGS),)
+KBUILD_CFLAGS :=
+endif
+KBUILD_CFLAGS += -Iinclude
 export KBUILD_CFLAGS
 
 # Make variables (CC, etc...)
@@ -82,7 +85,7 @@ $(vmlinux-dirs):
 
 app-y := $(patsubst %/, %/built-in.o, $(app-y))
 app: $(vmlinux-dirs) $(app-y)
-	$(CC) -o $(KBUILD_IMAGE) $(app-y)
+	$(CC) -o $(KBUILD_IMAGE) $(app-y) $(KBUILD_LDFLAGS)
 
 all: include/config/auto.conf app FORCE
 
