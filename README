@@ -1,0 +1,53 @@
+This package contain Kbuild, the Linux kernel build system.
+This package contain a simple copy of Kbuild with minor changes to be used out of the linux kernel tree.
+
+I) Installation
+install.py -o <install folder>
+or
+install.py to install Kbuild in /usr/share/Kbuild/
+
+II) Update Kbuild
+./install -i <kernel folder> -o ./
+This command will copy Kbuild from kernel tree to this package.
+
+III) Use Kbuild
+Your Makefile will never include a file from Kbuild but install but exports
+some environment variables and call Makefile.app
+
+1) Environment variables
+KBUILD_SRC: set the source directory for out of tree build
+KCONFIG_CONFIG: the name of config file to use (default .config)
+KBUILD_CFLAGS: CFLAGS to use to build the target
+KBUILD_LDFLAGS: LDFLAGS to use to build the target
+CONFIG_TARGETS: List of defconfigs
+*APP_SRC: list of folders containing the sources
+*KBUILD_IMAGE: Name of binary to produce
+
+*: mandatory
+
+2) targets
+all: build the image
+menuconfig: run the configuration tool (require kconfig-frontend)
+clean: remove object file
+distclean: clean + configuration files
+mrproper: remove any generated file
+help: display available targets
+
+3) Example of Makefile:
+KBUILD_IMAGE := helloworld
+APP_SRC = src/
+export KBUILD_IMAGE APP_SRC
+all:
+	$(Q)$(MAKE) -f /usr/share/Kbuild/Makefile.app all
+menuconfig:
+	$(Q)$(MAKE) -f /usr/share/Kbuild/Makefile.app menuconfig
+clean:
+	$(Q)$(MAKE) -f /usr/share/Kbuild/Makefile.app clean
+distclean:
+	$(Q)$(MAKE) -f /usr/share/Kbuild/Makefile.app distclean
+
+For sub directories Makefiles, please refer to https://www.kernel.org/doc/Documentation/kbuild/makefiles.txt
+
+
+IV) Know issues
+CFLAGS_$@, AFLAGS_$@, LDFLAGS_$@ and OBJCOPYFLAGS_$@ currently does not work.
