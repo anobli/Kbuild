@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import glob
+import getopt
 
 def build_fixdep(path, out):
 	os.system("gcc -o " + path + "/scripts/basic/fixdep " + path + "/scripts/basic/fixdep.c")
@@ -94,23 +95,32 @@ def parse(linux_src, out):
 		"/scripts/Makefile*",
 		"/scripts/basic/fixdep.c",
 	]
-	if out == "/usr/share/Kbuild":
+	if out != "." and out != "./":
 		files.append("/Makefile.app")
 	parse_files(linux_src, out, files)
 
-def main(argv):
-	if len(argv) == 0:
-		dir_out = "/usr/share/Kbuild"
-		dir_in = "."
-		fixdep(dir_in, dir_out)
-	elif len(argv) == 1:
-		dir_out = "."
-		dir_in = argv[0]
-	else:
-		dir_in = argv[0]
-		dir_out = argv[1]
+def print_help():
+	print 'install.py [-i <kernel folder>] [-o <install folder>]'
+	sys.exit()
 
-	parse(dir_in, dir_out)
+def main(argv):
+	kdir = "."
+	idir = "/usr/share/Kbuild"
+
+	try:
+		opts, args = getopt.getopt(argv,"hi:o:")
+	except getopt.GetoptError:
+		print_help()
+	for opt, arg in opts:
+		if opt == '-h':
+			print_help()
+		elif opt  == "-i":
+			kdir = arg
+		elif opt == "-o":
+			idir = arg
+	if kdir == ".":
+		fixdep(kdir, idir)
+	parse(kdir, idir)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
